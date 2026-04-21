@@ -26,7 +26,8 @@ export default function WeightagePage() {
   const [error, setError] = useState('')
   const [userName, setUserName] = useState('Teacher')
 
-  const total = Object.values(weights).reduce((a, b) => a + b, 0)
+  const WEIGHT_KEYS = ['assignments', 'quizzes', 'mid_exam', 'final_exam', 'activities', 'project', 'viva']
+  const total = WEIGHT_KEYS.reduce((a, b) => Number(a) + Number(weights[b] || 0), 0)
   const isValid = Math.abs(total - 100) < 0.01
 
   useEffect(() => {
@@ -40,7 +41,15 @@ export default function WeightagePage() {
     if (!selectedCourse) return
     fetch(`/api/weightage?courseId=${selectedCourse}`)
       .then(r => r.json())
-      .then(d => { if (d.config) setWeights(d.config) })
+      .then(d => {
+        if (d.config) {
+          const parsed: Record<string, number> = {}
+          Object.entries(d.config).forEach(([k, v]) => {
+            parsed[k] = parseFloat(v as string) || 0
+          })
+          setWeights(parsed)
+        }
+      })
   }, [selectedCourse])
 
   async function handleSave() {
@@ -69,7 +78,6 @@ export default function WeightagePage() {
           </p>
         </div>
 
-        {/* Course selector */}
         <div style={{ marginBottom: '24px', maxWidth: '300px' }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase' }}>
             Course
@@ -79,13 +87,12 @@ export default function WeightagePage() {
           </select>
         </div>
 
-        {/* Total indicator */}
         <div className="glass-card" style={{ padding: '16px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Total Weightage</span>
             <div style={{ fontFamily: 'Syne, sans-serif', fontSize: '32px', fontWeight: '800', marginTop: '2px',
               color: isValid ? 'var(--accent-green)' : total > 100 ? 'var(--accent-red)' : 'var(--accent-gold)' }}>
-              {total.toFixed(1)}%
+              {Number(total).toFixed(1)}%
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -101,7 +108,6 @@ export default function WeightagePage() {
           </div>
         </div>
 
-        {/* Weightage sliders */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px', marginBottom: '24px' }}>
           {COMPONENTS.map(comp => (
             <div key={comp.key} className="glass-card" style={{ padding: '18px' }}>
@@ -128,7 +134,7 @@ export default function WeightagePage() {
               </div>
               <div style={{ height: '6px', background: 'var(--border)', borderRadius: '99px', overflow: 'hidden' }}>
                 <div style={{
-                  width: `${Math.min(weights[comp.key] || 0, 100)}%`,
+                  width: `${Math.min(Number(weights[comp.key]) || 0, 100)}%`,
                   height: '100%',
                   background: 'var(--gradient-blue)',
                   borderRadius: '99px',

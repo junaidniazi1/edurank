@@ -24,6 +24,7 @@ const teacherNav: NavItem[] = [
   { label: 'Weightage', href: '/dashboard/teacher/weightage', icon: '⚖️' },
   { label: 'Announcements', href: '/dashboard/teacher/announcements', icon: '📢' },
   { label: 'Attendance', href: '/dashboard/teacher/attendance', icon: '📅' },
+  { label: 'Change Password', href: '/dashboard/teacher/change-password', icon: '🔒' },
 ]
 
 const studentNav: NavItem[] = [
@@ -33,6 +34,7 @@ const studentNav: NavItem[] = [
   { label: 'My Rank', href: '/dashboard/student/rank', icon: '⭐' },
   { label: 'Attendance', href: '/dashboard/student/attendance', icon: '📅' },
   { label: 'Announcements', href: '/dashboard/student/announcements', icon: '📢' },
+  { label: 'Change Password', href: '/dashboard/student/change-password', icon: '🔒' },
 ]
 
 export default function Sidebar({ role, userName }: SidebarProps) {
